@@ -29,9 +29,7 @@ def generate_graph(df: pd.DataFrame, query: str):
     }}
     """
 
-    # Call Together API
     response = get_response(prompt)
-    print(response)
     try:
         result = eval(response.strip())
         x_col = result.get("x")
@@ -62,7 +60,6 @@ def generate_graph(df: pd.DataFrame, query: str):
         ax.set_xlabel(x_col)
         ax.set_ylabel(y_col)
         ax.set_title(f"{x_col} vs {y_col} ({chart_type})")
-        # Rotate x-axis labels for better readability
         plt.xticks(rotation=45, ha='right')
 
         return fig
