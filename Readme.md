@@ -26,7 +26,7 @@ Ensure you have Python **3.8 or later** installed.
 1️⃣ **Clone the Repository**  
 ```sh
 git clone https://github.com/singhal-abhi/CSV-Chat-Agent.git
-cd csv-chat-agent
+cd CSV-Chat-Agent
 ```
 
 2️⃣ **Install Dependencies**  
