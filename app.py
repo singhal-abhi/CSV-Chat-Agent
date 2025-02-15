@@ -1,31 +1,47 @@
-from langchain.memory import ConversationBufferWindowMemory
 import logging
 import streamlit as st
 import pandas as pd
+import csv
 from agent import process_query
 from graph import generate_graph
-import csv
+from langchain.memory import ConversationBufferWindowMemory
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
-st.set_page_config(
-    page_title="CSV Chat Agent",
-    page_icon="📊",
-    layout="wide"
-)
-if st.button("Clear Memory 🧹", type="tertiary"):
-    st.session_state.memory.clear()
-    st.success("Memory cleared successfully!")
+# Set Streamlit Page Config
+st.set_page_config(page_title="CSV Chat Agent", page_icon="📊", layout="wide")
 
-st.title("CSV Chat Agent 🗂️📊")
+# Define Graph Keywords
+GRAPH_KEYWORDS = ["plot", "graph", "chart",
+                  "draw", "visualize", "diagram", "show trend"]
 
-
+# Initialize Memory for Chat History
 if "memory" not in st.session_state:
     st.session_state.memory = ConversationBufferWindowMemory(k=8)
 
+with st.sidebar:
+    st.markdown("## ⚙️ Settings")
+    st.markdown("---")  # Adds a separator line
 
-logging.basicConfig(level=logging.INFO)
-GRAPH_KEYWORDS = ["plot", "graph", "chart",
-                  "draw", "visualize", "diagram", "show trend"]
+    col1, col2 = st.columns(2)  # Arrange buttons in a row
+
+    with col1:
+        if st.button("🧹 Clear Memory", help="Reset the session memory"):
+            st.session_state.memory.clear()
+            st.success("Memory cleared successfully!")
+
+    with col2:
+        if st.button("🗑️ Clear Chat", help="Remove chat history"):
+            st.session_state.memory.clear()
+            st.session_state.messages = []  # Also clear chat history
+            st.success("Chat cleared successfully!")
+
+    st.markdown("---")  # Another separator for better grouping
+    st.markdown("🔹 Use the buttons above to reset memory or chat history.")
+
+
+st.title("CSV Chat Agent 🗂️📊")
+
+# Function to Check CSV Header
 
 
 def has_header(uploaded_file: UploadedFile) -> bool:
@@ -43,17 +59,23 @@ def has_header(uploaded_file: UploadedFile) -> bool:
         st.error("An error occurred while checking the CSV header.")
         return False
 
+# Function to Check if Query Requires a Graph
+
 
 def check_for_graph(user_query: str) -> bool:
-    query = user_query.lower().split()
-    return any(keyword in query for keyword in GRAPH_KEYWORDS)
+    """Check if the user query asks for a graph."""
+    return any(keyword in user_query.lower().split() for keyword in GRAPH_KEYWORDS)
+
+# Cache CSV Loading
 
 
 @st.cache_data(hash_funcs={UploadedFile: lambda x: x.getvalue()})
 def load_csv(uploaded_file):
+    """Load CSV file into a Pandas DataFrame."""
     return pd.read_csv(uploaded_file)
 
 
+# File Upload
 uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
 
 if uploaded_file:
@@ -61,12 +83,28 @@ if uploaded_file:
         st.error("Uploaded CSV does not contain a valid header!")
         st.stop()
 
+    # Load CSV
     df = load_csv(uploaded_file)
     st.write("CSV Preview:", df.head())
 
-    user_query = st.text_input("Ask a question about your CSV data:")
+    # Display Chat History
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    for msg in st.session_state.messages:
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
+
+    # User Query Input
+    user_query = st.chat_input("Ask a question about your CSV data...")
 
     if user_query:
+        # Save User Message
+        st.session_state.messages.append(
+            {"role": "user", "content": user_query})
+        with st.chat_message("user"):
+            st.markdown(user_query)
+
         if check_for_graph(user_query):
             fig = generate_graph(df, user_query)
             if fig:
@@ -75,4 +113,11 @@ if uploaded_file:
                 st.write("Could not generate graph. Try rephrasing.")
         else:
             response = process_query(df, user_query)
-            st.write(response)
+            st.session_state.memory.save_context(
+                {"input": user_query}, {"output": response})
+
+            # Save AI Response
+            st.session_state.messages.append(
+                {"role": "assistant", "content": response})
+            with st.chat_message("assistant"):
+                st.markdown(response)
