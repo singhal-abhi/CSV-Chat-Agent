@@ -1,3 +1,4 @@
+from langchain.memory import ConversationBufferMemory
 import logging
 import streamlit as st
 import pandas as pd
@@ -11,8 +12,17 @@ st.set_page_config(
     page_icon="📊",
     layout="wide"
 )
+if st.button("Clear Memory 🧹", type="tertiary"):
+    st.session_state.memory.clear()
+    st.success("Memory cleared successfully!")
 
 st.title("CSV Chat Agent 🗂️📊")
+
+
+if "memory" not in st.session_state:
+    st.session_state.memory = ConversationBufferMemory(k=8)
+
+
 logging.basicConfig(level=logging.INFO)
 GRAPH_KEYWORDS = ["plot", "graph", "chart",
                   "draw", "visualize", "diagram", "show trend"]
