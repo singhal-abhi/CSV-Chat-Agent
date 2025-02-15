@@ -7,7 +7,8 @@ from langchain.schema import HumanMessage
 import streamlit as st
 
 llama_vision_llm = ChatOpenAI(
-    model="meta-llama/Llama-Vision-Free",
+    # model="meta-llama/Llama-Vision-Free",
+    model="mistralai/Mistral-7B-Instruct-v0.2",
     openai_api_base="https://api.together.xyz",
     openai_api_key=os.getenv("TOGETHER_API_KEY", "default_value")
 )
@@ -27,7 +28,6 @@ def get_response(prompt: str, model='instruct'):
             response = llama_instruct_llm.invoke(
                 [HumanMessage(content=prompt)])
         else:
-            prompt += f'\nPrevious Conversations:{st.session_state.memory.load_memory_variables({}).get("chat_history", "")}'
             response = llama_vision_llm.invoke([HumanMessage(content=prompt)])
         return response.content
     except Exception as e:
@@ -67,26 +67,31 @@ def process_query(df: pd.DataFrame, query: str):
     logging.info(f"Passing Columns {selected_columns} to the LLM")
 
     filtered_df = df[selected_columns]
+    memory_context = st.session_state.memory.load_memory_variables(
+        {}).get("history", "")
     prompt = f"""
         You are an AI assistant that analyzes structured CSV data to answer user queries.
 
-        ### **Dataset Overview**
-        - The dataset contains structured tabular data with **{len(filtered_df.columns)} columns**
-        - **Dataset:** {filtered_df.to_dict(orient="records")}
+        ### **Conversation History**
+        {memory_context}
 
-        
+        ### **Dataset Overview**
+        - The dataset contains structured tabular data with **{len(filtered_df.columns)} columns**.
+        - **Dataset Preview:** {filtered_df.to_dict(orient="records")} 
+
         ### **User Query**
         "{query}"
 
         ### **Instructions**
-        1. **Extract data directly from the dataset**—do not assume or fabricate information.
-        2. If the query asks for **averages, sums, counts, or other numerical computations**, calculate them based on the provided data.
-        3. If the requested information **is not found** in the dataset, **clearly state that it is unavailable** instead of making assumptions.
-        4. Be **precise and concise** while answering.
-        5. If multiple interpretations of the query exist, **clarify assumptions** before responding.
-        6. **Do not include unrelated information or make up missing data.**
-        7. Maintain the structure of the response to ensure clarity.
-        8. Only provide required information, do not provide info yourself.
+        1. **Use the conversation history** to maintain continuity in responses.
+        2. **Extract data directly from the dataset**—do not assume or fabricate information.
+        3. If the query asks for **numerical computations**, calculate them based on available data.
+        4. If the requested information **is not found**, clearly state that it is unavailable.
+        5. Be **short and precise and concise** while answering.
+        6. If multiple interpretations exist, **clarify assumptions** before responding.
+        7. **Do not include unrelated information or make up missing data.**
+        8. Keep the answer short.
+
         Now, analyze the dataset and respond accurately based on the above guidelines.
     """
     response = get_response(prompt, model="vision")

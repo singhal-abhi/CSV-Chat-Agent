@@ -1,4 +1,4 @@
-from langchain.memory import ConversationBufferMemory
+from langchain.memory import ConversationBufferWindowMemory
 import logging
 import streamlit as st
 import pandas as pd
@@ -20,7 +20,7 @@ st.title("CSV Chat Agent 🗂️📊")
 
 
 if "memory" not in st.session_state:
-    st.session_state.memory = ConversationBufferMemory(k=8)
+    st.session_state.memory = ConversationBufferWindowMemory(k=8)
 
 
 logging.basicConfig(level=logging.INFO)

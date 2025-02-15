@@ -1,4 +1,5 @@
 # CSV Chat Agent
+[🚀 Live Demo](https://singhal-abhi-csv-chat-agent-app-mol6ju.streamlit.app/)
 
 ## Overview
 CSV Chat Agent is an interactive web application that enables users to upload CSV files, validate their contents, and interact with the data using natural language. The application can also generate graphs when users request visualizations.
