@@ -1,4 +1,4 @@
-import traceback
+import logging
 import matplotlib.pyplot as plt
 import pandas as pd
 from agent import get_response
@@ -41,7 +41,6 @@ def generate_graph(df: pd.DataFrame, query: str):
             return fig
 
     except Exception as e:
-        print("Error processing LLM response:")
-        traceback.print_exc()
+        logging.error(f"Error processing:{e}")
 
     return None
