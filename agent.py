@@ -86,6 +86,7 @@ def process_query(df: pd.DataFrame, query: str):
         5. If multiple interpretations of the query exist, **clarify assumptions** before responding.
         6. **Do not include unrelated information or make up missing data.**
         7. Maintain the structure of the response to ensure clarity.
+        8. Only provide required information, do not provide info yourself.
         Now, analyze the dataset and respond accurately based on the above guidelines.
     """
     response = get_response(prompt, model="vision")
