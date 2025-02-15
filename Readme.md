@@ -13,8 +13,7 @@ CSV Chat Agent is an interactive web application that enables users to upload CS
 - **Python** – Core programming language.  
 - **Streamlit** – Web framework for UI.  
 - **LangChain** – LLM-powered query processing.  
-- **Together API** – Handles natural language understanding.  
-- **Matplotlib & Plotly** – Generates data visualizations.  
+- **Matplotlib** – Generates data visualizations.  
 - **Pandas** – Processes CSV data.  
 
 ## Installation
@@ -36,7 +35,7 @@ pip install -r requirements.txt
 ```
 
 3️⃣ **Set Up API Key**  
-Obtain a Together API key from [Together AI](https://www.together.xyz) and set it as an environment variable:  
+Obtain a Together API key from [Together AI](https://api.together.ai/playground) and set it as an environment variable:  
 
 - **Linux/Mac:**  
   ```sh
@@ -59,4 +58,4 @@ streamlit run app.py
 4. If requested, the system will generate and display relevant graphs.  
 
 ## Contact
-For any questions or feedback, please reach out at: **your-email@example.com**  
+For any questions or feedback, please reach out at: **abhinavsinghal256@gmail.com**  
