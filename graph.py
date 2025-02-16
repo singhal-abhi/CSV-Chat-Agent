@@ -2,13 +2,18 @@ import logging
 import matplotlib.pyplot as plt
 import pandas as pd
 from agent import get_response, get_relevant_columns
+import streamlit as st
 
 
 def generate_graph(df: pd.DataFrame, query: str):
     """Generate a graph based on user query using AI to infer the best columns."""
     relevant_columns = get_relevant_columns(df, query)
+    memory_context = st.session_state.memory.load_memory_variables(
+        {}).get("history", "")
     # Construct LLM Prompt
     prompt = f"""
+    ### **Conversation History**
+        {memory_context}
     You are an AI assistant that helps users generate graphs from a CSV file.
     The dataset: {df[relevant_columns]}.
     User Query: "{query}"
