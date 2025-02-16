@@ -13,7 +13,7 @@ GRAPH_KEYWORDS = ["plot", "graph", "chart",
                   "draw", "visualize", "diagram", "show trend"]
 
 if "memory" not in st.session_state:
-    st.session_state.memory = ConversationBufferWindowMemory(k=8)
+    st.session_state.memory = ConversationBufferWindowMemory(k=5)
 
 with st.sidebar:
     st.markdown("## ⚙️ Settings")
