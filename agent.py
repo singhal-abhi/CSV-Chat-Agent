@@ -7,8 +7,8 @@ from langchain.schema import HumanMessage
 import streamlit as st
 
 llama_vision_llm = ChatOpenAI(
-    # model="meta-llama/Llama-Vision-Free",
-    model="mistralai/Mistral-7B-Instruct-v0.2",
+    model="meta-llama/Llama-Vision-Free",
+    # model="mistralai/Mistral-7B-Instruct-v0.2",
     # model="meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
     openai_api_base="https://api.together.xyz",
     openai_api_key=os.getenv("TOGETHER_API_KEY", "default_value")
