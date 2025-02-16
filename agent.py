@@ -9,6 +9,7 @@ import streamlit as st
 llama_vision_llm = ChatOpenAI(
     # model="meta-llama/Llama-Vision-Free",
     model="mistralai/Mistral-7B-Instruct-v0.2",
+    # model="meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
     openai_api_base="https://api.together.xyz",
     openai_api_key=os.getenv("TOGETHER_API_KEY", "default_value")
 )
@@ -37,8 +38,12 @@ def get_response(prompt: str, model='instruct'):
 
 def get_relevant_columns(df: pd.DataFrame, query: str) -> List:
     column_headers = ", ".join(df.columns)
+    memory_context = st.session_state.memory.load_memory_variables(
+        {}).get("history", "")
     prompt = f"""
     You are an AI assistant that can analyze tabular data.
+    ### **Conversation History**
+        {memory_context}
     
     The dataset contains the following columns:
     {column_headers}
@@ -65,8 +70,7 @@ def process_query(df: pd.DataFrame, query: str):
         st.error("Unable to find relevant columns, please re-phrase the prompt.")
         st.stop()
     logging.info(f"Passing Columns {selected_columns} to the LLM")
-
-    filtered_df = df[selected_columns]
+    filtered_df = df[selected_columns].to_markdown(index=False)
     memory_context = st.session_state.memory.load_memory_variables(
         {}).get("history", "")
     prompt = f"""
@@ -75,9 +79,8 @@ def process_query(df: pd.DataFrame, query: str):
         ### **Conversation History**
         {memory_context}
 
-        ### **Dataset Overview**
-        - The dataset contains structured tabular data with **{len(filtered_df.columns)} columns**.
-        - **Dataset Preview:** {filtered_df.to_dict(orient="records")} 
+        ### **Dataset **
+        {filtered_df} 
 
         ### **User Query**
         "{query}"

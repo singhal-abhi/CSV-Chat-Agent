@@ -94,8 +94,6 @@ if uploaded_file:
                 st.write("Could not generate graph. Try rephrasing.")
         else:
             response = process_query(df, user_query)
-            st.session_state.memory.save_context(
-                {"input": user_query}, {"output": response})
             st.session_state.messages.append(
                 {"role": "assistant", "content": response})
             with st.chat_message("assistant"):
