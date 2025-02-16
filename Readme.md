@@ -58,5 +58,7 @@ streamlit run app.py
 3. Enter a natural language query to interact with the data.  
 4. If requested, the system will generate and display relevant graphs.  
 
+[![Demo Conversation](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://github.com/singhal-abhi/CSV-Chat-Agent/raw/master/demo.mp4)
+
 ## Contact
 For any questions or feedback, please reach out at: **abhinavsinghal256@gmail.com**  
