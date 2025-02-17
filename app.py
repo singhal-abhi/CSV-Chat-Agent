@@ -36,6 +36,7 @@ st.title("CSV Chat Agent 🗂️📊")
 
 def has_header(uploaded_file: UploadedFile) -> bool:
     """Check if a CSV file has a header by analyzing its content."""
+    return True
     if uploaded_file is None:
         st.error("No file uploaded.")
         return False
